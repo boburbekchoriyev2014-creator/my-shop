@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRO SHOP FULL</title>
+
+<style>
+body {margin:0;font-family:Arial;background:#f1f1f1;}
+header {background:#111;color:white;padding:15px;text-align:center;}
+
+.search {
+    width:90%;
+    padding:10px;
+    margin:15px auto;
+    display:block;
+}
+
+.products {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.card {
+    background:white;
+    border-radius:12px;
+    padding:15px;
+    text-align:center;
+    box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+.card img {
+    width:100%;
+    height:150px;
+    object-fit:cover;
+}
+
+button {
+    padding:8px;
+    margin:5px;
+    border:none;
+    cursor:pointer;
+    border-radius:5px;
+}
+
+.add {background:#007bff;color:white;}
+.like {background:pink;}
+.remove {background:red;color:white;}
+
+.cart {
+    position:fixed;
+    right:0;
+    top:0;
+    width:270px;
+    height:100%;
+    background:white;
+    border-left:2px solid #ddd;
+    padding:15px;
+    overflow:auto;
+}
+
+.admin {
+    background:#fff;
+    padding:15px;
+    margin:20px;
+    border-radius:10px;
+}
+
+.admin input {
+    width:100%;
+    padding:8px;
+    margin:5px 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🛒 PRO SHOP + ADMIN</h1>
+</header>
+
+<input class="search" placeholder="Qidir..." onkeyup="searchProduct(this.value)">
+
+<div class="admin">
+<h3>🔐 Admin Panel</h3>
+<input id="name" placeholder="Mahsulot nomi">
+<input id="price" placeholder="Narxi">
+<input id="img" placeholder="Rasm linki">
+<button onclick="addProduct()">Qo‘shish</button>
+</div>
+
+<div class="products" id="products"></div>
+
+<div class="cart">
+<h3>Savat</h3>
+<ul id="cart"></ul>
+<h4 id="total"></h4>
+</div>
+
+<script>
+let items = JSON.parse(localStorage.getItem("items")) || [
+{
+name:"Telefon",
+price:2000000,
+img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"
+},
+{
+name:"Noutbuk",
+price:5000000,
+img:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8"
+}
+];
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let liked = JSON.parse(localStorage.getItem("liked")) || [];
+
+function saveItems(){
+localStorage.setItem("items", JSON.stringify(items));
+}
+
+function showProducts(list=items){
+products.innerHTML="";
+list.forEach((p,i)=>{
+let isLiked = liked.includes(p.name);
+
+products.innerHTML+=`
+<div class="card">
+<img src="${p.img}">
+<h3>${p.name}</h3>
+<p>${p.price} so'm</p>
+
+<button class="add" onclick="add(${i})">Savat</button>
+<button class="like" onclick="toggleLike('${p.name}')">
+${isLiked ? "❤️" : "🤍"}
+</button>
+<button class="remove" onclick="deleteProduct(${i})">❌</button>
+
+</div>`;
+});
+}
+
+function addProduct(){
+let n = name.value;
+let p = Number(price.value);
+let i = img.value;
+
+if(!n || !p || !i){
+alert("Hammasini to‘ldir!");
+return;
+}
+
+items.push({name:n,price:p,img:i});
+saveItems();
+showProducts();
+
+name.value="";
+price.value="";
+img.value="";
+}
+
+function deleteProduct(i){
+items.splice(i,1);
+saveItems();
+showProducts();
+}
+
+function searchProduct(val){
+let filtered = items.filter(p =>
+p.name.toLowerCase().includes(val.toLowerCase())
+);
+showProducts(filtered);
+}
+
+function add(i){
+cart.push(items[i]);
+localStorage.setItem("cart", JSON.stringify(cart));
+showCart();
+}
+
+function toggleLike(name){
+if(liked.includes(name)){
+liked = liked.filter(l=>l!==name);
+} else {
+liked.push(name);
+}
+localStorage.setItem("liked", JSON.stringify(liked));
+showProducts();
+}
+
+function remove(index){
+cart.splice(index,1);
+localStorage.setItem("cart", JSON.stringify(cart));
+showCart();
+}
+
+function showCart(){
+cartEl.innerHTML="";
+let sum=0;
+
+cart.forEach((p,i)=>{
+cartEl.innerHTML+=`
+<li>${p.name} 
+<button class="remove" onclick="remove(${i})">❌</button>
+</li>`;
+sum+=p.price;
+});
+
+total.innerText="Jami: "+sum+" so'm";
+}
+
+let cartEl=document.getElementById("cart");
+
+showProducts();
+showCart();
+</script>
+
+</body>
+</html>
