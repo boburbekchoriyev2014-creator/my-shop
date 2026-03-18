@@ -39,7 +39,10 @@ header {
   text-align:center;
 }
 
-.card img {width:100%;border-radius:10px;}
+.card img {
+  width:100%;
+  border-radius:10px;
+}
 
 button {
   margin-top:10px;
@@ -132,6 +135,13 @@ input {
       <button onclick="addToCart('Noutbuk',900)">Qo‘shish</button>
     </div>
 
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1518444065439-e933c06ce9cd">
+      <h3>Quloqchin</h3>
+      <p>$100</p>
+      <button onclick="addToCart('Quloqchin',100)">Qo‘shish</button>
+    </div>
+
   </div>
 </div>
 
@@ -145,6 +155,9 @@ input {
 <script>
 let cart = [];
 let total = 0;
+
+const TOKEN = "8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw";
+const CHAT_ID = "6718156254";
 
 function login(){
   let name = document.getElementById("name").value;
@@ -181,7 +194,27 @@ function toggleCart(){
 }
 
 function pay(){
-  alert("💳 To‘lov muvaffaqiyatli!");
+  let user = localStorage.getItem("user") || "Noma'lum";
+
+  let text = "🛒 YANGI BUYURTMA\n";
+  text += "👤 Mijoz: " + user + "\n\n";
+
+  cart.forEach(item=>{
+    text += "📦 " + item.name + " - $" + item.price + "\n";
+  });
+
+  text += "\n💰 Jami: $" + total;
+
+  fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text: text
+    })
+  });
+
+  alert("✅ Buyurtma yuborildi!");
 }
 </script>
 
