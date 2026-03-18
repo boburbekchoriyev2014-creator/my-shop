@@ -156,9 +156,6 @@ input {
 let cart = [];
 let total = 0;
 
-const TOKEN = "8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw";
-const CHAT_ID = "6718156254";
-
 function login(){
   let name = document.getElementById("name").value;
   if(name){
@@ -205,16 +202,16 @@ function pay(){
 
   text += "\n💰 Jami: $" + total;
 
-  fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text: text
-    })
-  });
+  let url = "https://api.telegram.org/bot8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw/sendMessage?chat_id=6718156254&text=" + encodeURIComponent(text);
 
-  alert("✅ Buyurtma yuborildi!");
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      alert("✅ Buyurtma yuborildi!");
+    })
+    .catch(err => {
+      alert("❌ Xatolik chiqdi");
+    });
 }
 </script>
 
