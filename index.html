@@ -8,7 +8,7 @@
 <style>
 body {
   margin:0;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   background:#0f172a;
   color:white;
 }
@@ -21,21 +21,10 @@ header {
   align-items:center;
 }
 
-.logo {
-  font-size:20px;
-  font-weight:bold;
-}
+.logo {font-weight:bold;}
+.user {font-size:14px;}
 
-.cart {
-  background:#22c55e;
-  padding:8px 15px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.container {
-  padding:20px;
-}
+.container {padding:20px;}
 
 .products {
   display:grid;
@@ -50,10 +39,7 @@ header {
   text-align:center;
 }
 
-.card img {
-  width:100%;
-  border-radius:10px;
-}
+.card img {width:100%;border-radius:10px;}
 
 button {
   margin-top:10px;
@@ -63,6 +49,13 @@ button {
   border-radius:10px;
   background:#22c55e;
   color:white;
+  cursor:pointer;
+}
+
+.cart {
+  background:#22c55e;
+  padding:8px 15px;
+  border-radius:10px;
   cursor:pointer;
 }
 
@@ -77,14 +70,49 @@ button {
   display:none;
 }
 
+.login-box {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#000000cc;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.login {
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+}
+
+input {
+  padding:10px;
+  margin:5px;
+  width:90%;
+}
 </style>
 </head>
 
 <body>
 
+<div class="login-box" id="loginBox">
+  <div class="login">
+    <h2>Login</h2>
+    <input id="name" placeholder="Ismingiz"><br>
+    <button onclick="login()">Kirish</button>
+  </div>
+</div>
+
 <header>
   <div class="logo">🛒 BOBUR SHOP</div>
-  <div class="cart" onclick="toggleCart()">🛍 Savat (<span id="count">0</span>)</div>
+  <div>
+    <span class="user" id="user"></span>
+    <span class="cart" onclick="toggleCart()">🛍 (<span id="count">0</span>)</span>
+  </div>
 </header>
 
 <div class="container">
@@ -104,13 +132,6 @@ button {
       <button onclick="addToCart('Noutbuk',900)">Qo‘shish</button>
     </div>
 
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1518444065439-e933c06ce9cd">
-      <h3>Quloqchin</h3>
-      <p>$100</p>
-      <button onclick="addToCart('Quloqchin',100)">Qo‘shish</button>
-    </div>
-
   </div>
 </div>
 
@@ -118,12 +139,29 @@ button {
   <h3>Savat</h3>
   <ul id="list"></ul>
   <p>Jami: $<span id="total">0</span></p>
-  <button onclick="checkout()">Buyurtma berish</button>
+  <button onclick="pay()">💳 To‘lov qilish</button>
 </div>
 
 <script>
 let cart = [];
 let total = 0;
+
+function login(){
+  let name = document.getElementById("name").value;
+  if(name){
+    localStorage.setItem("user", name);
+    document.getElementById("user").innerText = name;
+    document.getElementById("loginBox").style.display = "none";
+  }
+}
+
+window.onload = function(){
+  let saved = localStorage.getItem("user");
+  if(saved){
+    document.getElementById("user").innerText = saved;
+    document.getElementById("loginBox").style.display = "none";
+  }
+}
 
 function addToCart(name, price){
   cart.push({name, price});
@@ -142,8 +180,8 @@ function toggleCart(){
   box.style.display = box.style.display === "block" ? "none" : "block";
 }
 
-function checkout(){
-  alert("Buyurtma qabul qilindi ✅");
+function pay(){
+  alert("💳 To‘lov muvaffaqiyatli!");
 }
 </script>
 
