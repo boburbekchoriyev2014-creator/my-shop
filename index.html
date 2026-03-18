@@ -3,104 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bobur Shop SUPER PRO</title>
+<title>Bobur Shop REAL BIZNES</title>
 
 <style>
-body {
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-}
-
-header {
-  background:#020617;
-  padding:15px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.logo {font-weight:bold;}
-
-button {
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#22c55e;
-  color:white;
-  cursor:pointer;
-}
-
+body {margin:0;font-family:Arial;background:#0f172a;color:white;}
+header {background:#020617;padding:10px;display:flex;justify-content:space-between;}
+button {padding:10px;border:none;border-radius:8px;background:#22c55e;color:white;}
 .container {padding:15px;}
-
-.products {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:15px;
-}
-
-.card {
-  background:#1e293b;
-  padding:10px;
-  border-radius:10px;
-  text-align:center;
-}
-
-.cart-box {
+.products {display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.card {background:#1e293b;padding:10px;border-radius:10px;text-align:center;}
+.cart-box, .admin {position:fixed;background:#111;padding:10px;border-radius:10px;width:260px;}
+.cart-box {right:10px;top:60px;display:none;}
+.admin {left:10px;top:60px;display:none;max-height:300px;overflow:auto;}
+.form-box {
   position:fixed;
-  right:10px;
-  top:60px;
-  background:#111;
-  padding:10px;
-  width:240px;
-  display:none;
-}
-
-.admin {
-  position:fixed;
-  left:10px;
-  top:60px;
-  background:#111;
-  padding:10px;
-  width:240px;
-  max-height:300px;
-  overflow:auto;
-  display:none;
-}
-
-.login {
-  position:fixed;
-  top:0;
-  left:0;
+  bottom:0;
   width:100%;
-  height:100%;
-  background:#000000cc;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  background:#000;
+  padding:15px;
+  display:none;
 }
-
-.box {
-  background:#111;
-  padding:20px;
-  border-radius:10px;
-  text-align:center;
+input {
+  width:100%;
+  padding:8px;
+  margin:5px 0;
+  border-radius:6px;
+  border:none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="login" id="loginBox">
-  <div class="box">
-    <h2>Admin Login</h2>
-    <input id="pass" placeholder="Parol"><br><br>
-    <button onclick="login()">Kirish</button>
-  </div>
-</div>
-
 <header>
-  <div class="logo">🔥 SUPER SHOP</div>
+  <div>🔥 REAL SHOP</div>
   <div>
     <button onclick="toggleCart()">🛍 (<span id="count">0</span>)</button>
     <button onclick="toggleAdmin()">⚙️</button>
@@ -109,19 +45,16 @@ button {
 
 <div class="container">
   <div class="products">
-
     <div class="card">
       <h3>Telefon</h3>
       <p>$500</p>
       <button onclick="addToCart('Telefon',500)">+</button>
     </div>
-
     <div class="card">
       <h3>Noutbuk</h3>
       <p>$900</p>
       <button onclick="addToCart('Noutbuk',900)">+</button>
     </div>
-
   </div>
 </div>
 
@@ -129,11 +62,21 @@ button {
   <h3>Savat</h3>
   <ul id="list"></ul>
   <p>$<span id="total">0</span></p>
-  <button onclick="pay()">💳 Buyurtma</button>
+  <button onclick="openForm()">💳 Buyurtma</button>
+</div>
+
+<div class="form-box" id="formBox">
+  <h3>Buyurtma</h3>
+  <input id="name" placeholder="Ismingiz">
+  <input id="phone" placeholder="Telefon raqam">
+  <button onclick="pay()">Yuborish</button>
 </div>
 
 <div class="admin" id="adminBox">
-  <h3>📦 Orders</h3>
+  <h3>📊 Statistika</h3>
+  <p>Buyurtmalar: <span id="countOrders">0</span></p>
+  <p>Jami: $<span id="sum">0</span></p>
+  <h4>📦 Orders</h4>
   <ul id="orders"></ul>
 </div>
 
@@ -144,80 +87,74 @@ let total = 0;
 
 const TOKEN = "8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw";
 const CHAT_ID = "6718156254";
-const PASSWORD = "1234";
-
-function login(){
-  let p = document.getElementById("pass").value;
-  if(p === PASSWORD){
-    document.getElementById("loginBox").style.display = "none";
-  } else {
-    alert("❌ Noto‘g‘ri parol");
-  }
-}
 
 function updateCart(){
-  document.getElementById("list").innerHTML = "";
-  total = 0;
-
-  cart.forEach(item=>{
-    total += item.price;
-    let li = document.createElement("li");
-    li.innerText = item.name + " $" + item.price;
-    document.getElementById("list").appendChild(li);
+  document.getElementById("list").innerHTML="";
+  total=0;
+  cart.forEach(i=>{
+    total+=i.price;
+    let li=document.createElement("li");
+    li.innerText=i.name+" $"+i.price;
+    list.appendChild(li);
   });
-
-  document.getElementById("count").innerText = cart.length;
-  document.getElementById("total").innerText = total;
-
-  localStorage.setItem("cart", JSON.stringify(cart));
+  count.innerText=cart.length;
+  totalEl.innerText=total;
+  localStorage.setItem("cart",JSON.stringify(cart));
 }
 
-function updateOrders(){
-  document.getElementById("orders").innerHTML = "";
-  orders.forEach(o=>{
-    let li = document.createElement("li");
-    li.innerText = o;
-    document.getElementById("orders").appendChild(li);
-  });
-}
-
-function addToCart(name, price){
-  cart.push({name, price});
+function addToCart(n,p){
+  cart.push({name:n,price:p});
   updateCart();
 }
 
 function toggleCart(){
-  let b = document.getElementById("cartBox");
-  b.style.display = b.style.display==="block"?"none":"block";
+  cartBox.style.display=cartBox.style.display==="block"?"none":"block";
 }
 
 function toggleAdmin(){
-  let b = document.getElementById("adminBox");
-  b.style.display = b.style.display==="block"?"none":"block";
+  adminBox.style.display=adminBox.style.display==="block"?"none":"block";
+}
+
+function openForm(){
+  formBox.style.display="block";
+}
+
+function updateOrders(){
+  ordersEl.innerHTML="";
+  let sum=0;
+  orders.forEach(o=>{
+    let li=document.createElement("li");
+    li.innerText=o.text;
+    ordersEl.appendChild(li);
+    sum+=o.total;
+  });
+  countOrders.innerText=orders.length;
+  sumEl.innerText=sum;
 }
 
 function pay(){
-  let time = new Date().toLocaleString();
-  let text = "🛒 ORDER\n" + time + "\n\n";
+  let name=document.getElementById("name").value;
+  let phone=document.getElementById("phone").value;
 
-  cart.forEach(item=>{
-    text += item.name + " $" + item.price + "\n";
+  let text="🛒 ORDER\n👤 "+name+"\n📞 "+phone+"\n\n";
+
+  cart.forEach(i=>{
+    text+=i.name+" $"+i.price+"\n";
   });
 
-  text += "\nTOTAL $" + total;
+  text+="\nTOTAL $"+total;
 
-  orders.push(text);
-  localStorage.setItem("orders", JSON.stringify(orders));
+  orders.push({text,total});
+  localStorage.setItem("orders",JSON.stringify(orders));
 
-  let url = "https://api.telegram.org/bot8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw/sendMessage?chat_id=6718156254&text=" + encodeURIComponent(text);
-
-  fetch(url);
+  fetch("https://api.telegram.org/bot8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw/sendMessage?chat_id=6718156254&text="+encodeURIComponent(text));
 
   alert("✅ Yuborildi");
 
-  cart = [];
+  cart=[];
   updateCart();
   updateOrders();
+  formBox.style.display="none";
 }
 
 updateCart();
@@ -225,4 +162,4 @@ updateOrders();
 </script>
 
 </body>
-</
+</html>
