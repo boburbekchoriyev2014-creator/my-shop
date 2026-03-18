@@ -3,25 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PRO SHOP FULL</title>
+<title>Bobur Shop PRO</title>
 
 <style>
-body {margin:0;font-family:sans-serif;background:#f5f5f5;}
-header {background:#111;color:white;padding:15px;text-align:center;}
-.container {display:flex;}
-.products {flex:3;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:20px;}
-.card {background:white;padding:15px;border-radius:10px;text-align:center;}
-.card img {width:100%;height:150px;object-fit:cover;}
-button {padding:8px;border:none;border-radius:5px;margin-top:5px;cursor:pointer;}
-.order {background:green;color:white;width:100%;}
-.cart {flex:1;background:#fff;padding:15px;}
-input {width:90%;padding:8px;margin:5px;}
+body {
+  margin:0;
+  font-family:sans-serif;
+  background:#f5f5f5;
+}
+
+header {
+  background:#111;
+  color:white;
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+}
+
+.container {
+  display:flex;
+}
+
+.products {
+  flex:3;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+  padding:20px;
+}
+
+.card {
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
+
+.card img {
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
+
+button {
+  padding:8px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.order {
+  background:green;
+  color:white;
+  width:100%;
+}
+
+.cart {
+  flex:1;
+  background:#fff;
+  padding:15px;
+}
+
+.admin {
+  padding:20px;
+}
+
+input {
+  width:100%;
+  padding:8px;
+  margin:5px 0;
+}
 </style>
 </head>
 
 <body>
 
-<header><h2>🛒 PRO SHOP FULL</h2></header>
+<header>🛒 Bobur Online Shop</header>
 
 <div class="container">
 
@@ -29,106 +86,70 @@ input {width:90%;padding:8px;margin:5px;}
 
 <div class="cart">
 <h3>Savat</h3>
-<ul id="cart"></ul>
 <p id="total">Jami: 0 so'm</p>
-
-<input id="name" placeholder="Ism">
-<input id="phone" placeholder="Telefon">
-<button onclick="sendOrder()">Buyurtma berish</button>
-
-<hr>
-
-<h4>Admin Panel</h4>
-<input id="pname" placeholder="Mahsulot nomi">
-<input id="pprice" placeholder="Narxi">
-<input id="pimg" placeholder="Rasm link">
-<button onclick="addProduct()">Qo‘shish</button>
+</div>
 
 </div>
 
+<div class="admin">
+<h3>Admin Panel</h3>
+<input id="name" placeholder="Mahsulot nomi">
+<input id="price" placeholder="Narxi">
+<input id="img" placeholder="Rasm linki">
+<button onclick="addProduct()">Qo‘shish</button>
 </div>
 
 <script>
+let products = [];
+let total = 0;
 
-// 🔥 SHUNI O‘ZGARTIR
+// TELEGRAM
 let token = "8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw";
 let chat_id = "6718156254";
 
-let items = [
-{name:"Telefon",price:2000000,img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"},
-{name:"Noutbuk",price:5000000,img:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8"}
-];
+function addProduct(){
+  let name = document.getElementById("name").value;
+  let price = document.getElementById("price").value;
+  let img = document.getElementById("img").value;
 
-let cart = [];
+  products.push({name, price, img});
+  showProducts();
+}
 
 function showProducts(){
-products.innerHTML="";
-items.forEach((p,i)=>{
-products.innerHTML+=`
-<div class="card">
-<img src="${p.img}">
-<h3>${p.name}</h3>
-<p>${p.price} so'm</p>
-<button class="order" onclick="addToCart(${i})">Savatga qo‘sh</button>
-</div>`;
-});
+  let div = document.getElementById("products");
+  div.innerHTML = "";
+
+  products.forEach(p => {
+    div.innerHTML += `
+    <div class="card">
+      <img src="${p.img}">
+      <h3>${p.name}</h3>
+      <p>${p.price} so'm</p>
+      <button class="order" onclick="buy('${p.name}', ${p.price})">Buyurtma</button>
+    </div>`;
+  });
 }
 
-function addToCart(i){
-cart.push(items[i]);
-renderCart();
+function buy(name, price){
+  total += Number(price);
+  document.getElementById("total").innerText = "Jami: " + total + " so'm";
+
+  let text = `🛒 Yangi buyurtma!
+Mahsulot: ${name}
+Narx: ${price} so'm`;
+
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      chat_id: chat_id,
+      text: text
+    })
+  });
+
+  alert("Buyurtma yuborildi!");
 }
-
-function renderCart(){
-let list="";
-let total=0;
-
-cart.forEach(p=>{
-list+=`<li>${p.name} - ${p.price}</li>`;
-total+=p.price;
-});
-
-document.getElementById("cart").innerHTML=list;
-document.getElementById("total").innerText="Jami: "+total+" so'm";
-}
-
-function sendOrder(){
-let name=document.getElementById("name").value;
-let phone=document.getElementById("phone").value;
-
-let text="🛒 Yangi buyurtma:\n";
-
-cart.forEach(p=>{
-text+=p.name+" - "+p.price+" so'm\n";
-});
-
-text+="\nIsm: "+name+"\nTel: "+phone;
-
-fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-chat_id:chat_id,
-text:text
-})
-});
-
-alert("Buyurtma yuborildi!");
-cart=[];
-renderCart();
-}
-
-function addProduct(){
-let name=document.getElementById("pname").value;
-let price=document.getElementById("pprice").value;
-let img=document.getElementById("pimg").value;
-
-items.push({name,price:Number(price),img});
-showProducts();
-}
-
-showProducts();
-
 </script>
 
 </body>
