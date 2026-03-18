@@ -6,215 +6,129 @@
 <title>PRO SHOP FULL</title>
 
 <style>
-body {margin:0;font-family:Arial;background:#f1f1f1;}
+body {margin:0;font-family:sans-serif;background:#f5f5f5;}
 header {background:#111;color:white;padding:15px;text-align:center;}
-
-.search {
-    width:90%;
-    padding:10px;
-    margin:15px auto;
-    display:block;
-}
-
-.products {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-    padding:20px;
-}
-
-.card {
-    background:white;
-    border-radius:12px;
-    padding:15px;
-    text-align:center;
-    box-shadow:0 5px 10px rgba(0,0,0,0.1);
-}
-
-.card img {
-    width:100%;
-    height:150px;
-    object-fit:cover;
-}
-
-button {
-    padding:8px;
-    margin:5px;
-    border:none;
-    cursor:pointer;
-    border-radius:5px;
-}
-
-.add {background:#007bff;color:white;}
-.like {background:pink;}
-.remove {background:red;color:white;}
-
-.cart {
-    position:fixed;
-    right:0;
-    top:0;
-    width:270px;
-    height:100%;
-    background:white;
-    border-left:2px solid #ddd;
-    padding:15px;
-    overflow:auto;
-}
-
-.admin {
-    background:#fff;
-    padding:15px;
-    margin:20px;
-    border-radius:10px;
-}
-
-.admin input {
-    width:100%;
-    padding:8px;
-    margin:5px 0;
-}
+.container {display:flex;}
+.products {flex:3;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;padding:20px;}
+.card {background:white;padding:15px;border-radius:10px;text-align:center;}
+.card img {width:100%;height:150px;object-fit:cover;}
+button {padding:8px;border:none;border-radius:5px;margin-top:5px;cursor:pointer;}
+.order {background:green;color:white;width:100%;}
+.cart {flex:1;background:#fff;padding:15px;}
+input {width:90%;padding:8px;margin:5px;}
 </style>
 </head>
 
 <body>
 
-<header>
-<h1>🛒 PRO SHOP + ADMIN</h1>
-</header>
+<header><h2>🛒 PRO SHOP FULL</h2></header>
 
-<input class="search" placeholder="Qidir..." onkeyup="searchProduct(this.value)">
-
-<div class="admin">
-<h3>🔐 Admin Panel</h3>
-<input id="name" placeholder="Mahsulot nomi">
-<input id="price" placeholder="Narxi">
-<input id="img" placeholder="Rasm linki">
-<button onclick="addProduct()">Qo‘shish</button>
-</div>
+<div class="container">
 
 <div class="products" id="products"></div>
 
 <div class="cart">
 <h3>Savat</h3>
 <ul id="cart"></ul>
-<h4 id="total"></h4>
+<p id="total">Jami: 0 so'm</p>
+
+<input id="name" placeholder="Ism">
+<input id="phone" placeholder="Telefon">
+<button onclick="sendOrder()">Buyurtma berish</button>
+
+<hr>
+
+<h4>Admin Panel</h4>
+<input id="pname" placeholder="Mahsulot nomi">
+<input id="pprice" placeholder="Narxi">
+<input id="pimg" placeholder="Rasm link">
+<button onclick="addProduct()">Qo‘shish</button>
+
+</div>
+
 </div>
 
 <script>
-let items = JSON.parse(localStorage.getItem("items")) || [
-{
-name:"Telefon",
-price:2000000,
-img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"
-},
-{
-name:"Noutbuk",
-price:5000000,
-img:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8"
-}
+
+// 🔥 SHUNI O‘ZGARTIR
+let token = "8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw";
+let chat_id = "6718156254";
+
+let items = [
+{name:"Telefon",price:2000000,img:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"},
+{name:"Noutbuk",price:5000000,img:"https://images.unsplash.com/photo-1517336714731-489689fd1ca8"}
 ];
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let liked = JSON.parse(localStorage.getItem("liked")) || [];
+let cart = [];
 
-function saveItems(){
-localStorage.setItem("items", JSON.stringify(items));
-}
-
-function showProducts(list=items){
+function showProducts(){
 products.innerHTML="";
-list.forEach((p,i)=>{
-let isLiked = liked.includes(p.name);
-
+items.forEach((p,i)=>{
 products.innerHTML+=`
 <div class="card">
 <img src="${p.img}">
 <h3>${p.name}</h3>
 <p>${p.price} so'm</p>
-
-<button class="add" onclick="add(${i})">Savat</button>
-<button class="like" onclick="toggleLike('${p.name}')">
-${isLiked ? "❤️" : "🤍"}
-</button>
-<button class="remove" onclick="deleteProduct(${i})">❌</button>
-
+<button class="order" onclick="addToCart(${i})">Savatga qo‘sh</button>
 </div>`;
 });
 }
 
-function addProduct(){
-let n = name.value;
-let p = Number(price.value);
-let i = img.value;
-
-if(!n || !p || !i){
-alert("Hammasini to‘ldir!");
-return;
-}
-
-items.push({name:n,price:p,img:i});
-saveItems();
-showProducts();
-
-name.value="";
-price.value="";
-img.value="";
-}
-
-function deleteProduct(i){
-items.splice(i,1);
-saveItems();
-showProducts();
-}
-
-function searchProduct(val){
-let filtered = items.filter(p =>
-p.name.toLowerCase().includes(val.toLowerCase())
-);
-showProducts(filtered);
-}
-
-function add(i){
+function addToCart(i){
 cart.push(items[i]);
-localStorage.setItem("cart", JSON.stringify(cart));
-showCart();
+renderCart();
 }
 
-function toggleLike(name){
-if(liked.includes(name)){
-liked = liked.filter(l=>l!==name);
-} else {
-liked.push(name);
-}
-localStorage.setItem("liked", JSON.stringify(liked));
-showProducts();
-}
+function renderCart(){
+let list="";
+let total=0;
 
-function remove(index){
-cart.splice(index,1);
-localStorage.setItem("cart", JSON.stringify(cart));
-showCart();
-}
-
-function showCart(){
-cartEl.innerHTML="";
-let sum=0;
-
-cart.forEach((p,i)=>{
-cartEl.innerHTML+=`
-<li>${p.name} 
-<button class="remove" onclick="remove(${i})">❌</button>
-</li>`;
-sum+=p.price;
+cart.forEach(p=>{
+list+=`<li>${p.name} - ${p.price}</li>`;
+total+=p.price;
 });
 
-total.innerText="Jami: "+sum+" so'm";
+document.getElementById("cart").innerHTML=list;
+document.getElementById("total").innerText="Jami: "+total+" so'm";
 }
 
-let cartEl=document.getElementById("cart");
+function sendOrder(){
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+
+let text="🛒 Yangi buyurtma:\n";
+
+cart.forEach(p=>{
+text+=p.name+" - "+p.price+" so'm\n";
+});
+
+text+="\nIsm: "+name+"\nTel: "+phone;
+
+fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+chat_id:chat_id,
+text:text
+})
+});
+
+alert("Buyurtma yuborildi!");
+cart=[];
+renderCart();
+}
+
+function addProduct(){
+let name=document.getElementById("pname").value;
+let price=document.getElementById("pprice").value;
+let img=document.getElementById("pimg").value;
+
+items.push({name,price:Number(price),img});
+showProducts();
+}
 
 showProducts();
-showCart();
+
 </script>
 
 </body>
