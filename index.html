@@ -1,36 +1,123 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bobur Shop PRO</title>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+header {
+  background: linear-gradient(90deg,#111,#1e293b);
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.container {
+  padding: 20px;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+button {
+  margin-top:10px;
+  padding:10px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  background:#22c55e;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover {
+  background:#16a34a;
+}
+
+footer {
+  text-align:center;
+  padding:15px;
+  margin-top:30px;
+  background:#111;
+}
+</style>
+
+</head>
+
+<body>
+
 <header>
-  🛒 BOBUR SHOP PRO
+🛒 BOBUR SHOP PRO
 </header>
 
 <div class="container">
   <div class="products">
 
     <div class="card">
-      <img src="https://via.placeholder.com/200" alt="">
-      <h3>Telefon</h3>
-      <p>500$</p>
-      <button onclick="buy()">Sotib olish</button>
+      <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9">
+      <h3>iPhone</h3>
+      <p>$999</p>
+      <button onclick="buy('iPhone')">Sotib olish</button>
     </div>
 
     <div class="card">
-      <img src="https://via.placeholder.com/200" alt="">
+      <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8">
       <h3>Noutbuk</h3>
-      <p>900$</p>
-      <button onclick="buy()">Sotib olish</button>
+      <p>$1200</p>
+      <button onclick="buy('Noutbuk')">Sotib olish</button>
     </div>
 
     <div class="card">
-      <img src="https://via.placeholder.com/200" alt="">
+      <img src="https://images.unsplash.com/photo-1518444065439-e933c06ce9cd">
       <h3>Quloqchin</h3>
-      <p>100$</p>
-      <button onclick="buy()">Sotib olish</button>
+      <p>$150</p>
+      <button onclick="buy('Quloqchin')">Sotib olish</button>
     </div>
 
   </div>
 </div>
 
+<footer>
+© 2026 Bobur Shop
+</footer>
+
 <script>
-function buy() {
-  alert("Buyurtma qabul qilindi!");
+function buy(product){
+  alert(product + " buyurtma qilindi!");
 }
 </script>
+
+</body>
+</html>
