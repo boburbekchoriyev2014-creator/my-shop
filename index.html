@@ -3,10 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bobur Shop ADMIN</title>
+<title>Bobur Shop SUPER PRO</title>
 
 <style>
-body {margin:0;font-family:Arial;background:#0f172a;color:white;}
+body {
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
 
 header {
   background:#020617;
@@ -14,6 +19,8 @@ header {
   display:flex;
   justify-content:space-between;
 }
+
+.logo {font-weight:bold;}
 
 button {
   padding:10px;
@@ -24,49 +31,79 @@ button {
   cursor:pointer;
 }
 
-.container {padding:20px;}
+.container {padding:15px;}
 
 .products {
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:15px;
 }
 
 .card {
   background:#1e293b;
-  padding:15px;
+  padding:10px;
   border-radius:10px;
+  text-align:center;
 }
 
 .cart-box {
   position:fixed;
   right:10px;
-  top:70px;
+  top:60px;
   background:#111;
   padding:10px;
-  width:250px;
+  width:240px;
   display:none;
 }
 
 .admin {
   position:fixed;
   left:10px;
-  top:70px;
+  top:60px;
   background:#111;
   padding:10px;
-  width:250px;
-  max-height:400px;
+  width:240px;
+  max-height:300px;
   overflow:auto;
+  display:none;
+}
+
+.login {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:#000000cc;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.box {
+  background:#111;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
 }
 </style>
 </head>
 
 <body>
 
+<div class="login" id="loginBox">
+  <div class="box">
+    <h2>Admin Login</h2>
+    <input id="pass" placeholder="Parol"><br><br>
+    <button onclick="login()">Kirish</button>
+  </div>
+</div>
+
 <header>
-  <div>🔥 BOBUR SHOP</div>
+  <div class="logo">🔥 SUPER SHOP</div>
   <div>
     <button onclick="toggleCart()">🛍 (<span id="count">0</span>)</button>
+    <button onclick="toggleAdmin()">⚙️</button>
   </div>
 </header>
 
@@ -76,13 +113,13 @@ button {
     <div class="card">
       <h3>Telefon</h3>
       <p>$500</p>
-      <button onclick="addToCart('Telefon',500)">Qo‘shish</button>
+      <button onclick="addToCart('Telefon',500)">+</button>
     </div>
 
     <div class="card">
       <h3>Noutbuk</h3>
       <p>$900</p>
-      <button onclick="addToCart('Noutbuk',900)">Qo‘shish</button>
+      <button onclick="addToCart('Noutbuk',900)">+</button>
     </div>
 
   </div>
@@ -91,12 +128,12 @@ button {
 <div class="cart-box" id="cartBox">
   <h3>Savat</h3>
   <ul id="list"></ul>
-  <p>Jami: $<span id="total">0</span></p>
+  <p>$<span id="total">0</span></p>
   <button onclick="pay()">💳 Buyurtma</button>
 </div>
 
-<div class="admin">
-  <h3>📦 Buyurtmalar</h3>
+<div class="admin" id="adminBox">
+  <h3>📦 Orders</h3>
   <ul id="orders"></ul>
 </div>
 
@@ -107,6 +144,16 @@ let total = 0;
 
 const TOKEN = "8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw";
 const CHAT_ID = "6718156254";
+const PASSWORD = "1234";
+
+function login(){
+  let p = document.getElementById("pass").value;
+  if(p === PASSWORD){
+    document.getElementById("loginBox").style.display = "none";
+  } else {
+    alert("❌ Noto‘g‘ri parol");
+  }
+}
 
 function updateCart(){
   document.getElementById("list").innerHTML = "";
@@ -115,7 +162,7 @@ function updateCart(){
   cart.forEach(item=>{
     total += item.price;
     let li = document.createElement("li");
-    li.innerText = item.name + " - $" + item.price;
+    li.innerText = item.name + " $" + item.price;
     document.getElementById("list").appendChild(li);
   });
 
@@ -127,7 +174,7 @@ function updateCart(){
 
 function updateOrders(){
   document.getElementById("orders").innerHTML = "";
-  orders.forEach((o,i)=>{
+  orders.forEach(o=>{
     let li = document.createElement("li");
     li.innerText = o;
     document.getElementById("orders").appendChild(li);
@@ -140,18 +187,24 @@ function addToCart(name, price){
 }
 
 function toggleCart(){
-  let box = document.getElementById("cartBox");
-  box.style.display = box.style.display === "block" ? "none" : "block";
+  let b = document.getElementById("cartBox");
+  b.style.display = b.style.display==="block"?"none":"block";
+}
+
+function toggleAdmin(){
+  let b = document.getElementById("adminBox");
+  b.style.display = b.style.display==="block"?"none":"block";
 }
 
 function pay(){
-  let text = "🛒 BUYURTMA\n\n";
+  let time = new Date().toLocaleString();
+  let text = "🛒 ORDER\n" + time + "\n\n";
 
   cart.forEach(item=>{
     text += item.name + " $" + item.price + "\n";
   });
 
-  text += "\nJami $" + total;
+  text += "\nTOTAL $" + total;
 
   orders.push(text);
   localStorage.setItem("orders", JSON.stringify(orders));
@@ -160,7 +213,7 @@ function pay(){
 
   fetch(url);
 
-  alert("✅ Buyurtma yuborildi");
+  alert("✅ Yuborildi");
 
   cart = [];
   updateCart();
@@ -172,4 +225,4 @@ updateOrders();
 </script>
 
 </body>
-</html>
+</
