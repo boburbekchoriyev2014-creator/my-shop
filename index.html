@@ -3,57 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bobur Shop PRO MAX</title>
+<title>Bobur Shop ADMIN</title>
 
 <style>
-body {
-  margin:0;
-  font-family: Arial;
-  background:#0f172a;
-  color:white;
-}
+body {margin:0;font-family:Arial;background:#0f172a;color:white;}
 
 header {
   background:#020617;
   padding:15px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-}
-
-.logo {font-weight:bold;}
-
-.cart {
-  background:#22c55e;
-  padding:8px 15px;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.container {padding:20px;}
-
-.products {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:20px;
-}
-
-.card {
-  background:#1e293b;
-  padding:15px;
-  border-radius:15px;
-  text-align:center;
-  transition:0.3s;
-}
-
-.card:hover {
-  transform:scale(1.05);
 }
 
 button {
-  margin-top:10px;
   padding:10px;
-  width:100%;
   border:none;
   border-radius:10px;
   background:#22c55e;
@@ -61,15 +24,39 @@ button {
   cursor:pointer;
 }
 
+.container {padding:20px;}
+
+.products {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+
+.card {
+  background:#1e293b;
+  padding:15px;
+  border-radius:10px;
+}
+
 .cart-box {
   position:fixed;
   right:10px;
   top:70px;
-  background:#020617;
-  padding:15px;
-  border-radius:10px;
-  width:260px;
+  background:#111;
+  padding:10px;
+  width:250px;
   display:none;
+}
+
+.admin {
+  position:fixed;
+  left:10px;
+  top:70px;
+  background:#111;
+  padding:10px;
+  width:250px;
+  max-height:400px;
+  overflow:auto;
 }
 </style>
 </head>
@@ -77,8 +64,10 @@ button {
 <body>
 
 <header>
-  <div class="logo">🔥 BOBUR SHOP PRO MAX</div>
-  <div class="cart" onclick="toggleCart()">🛍 (<span id="count">0</span>)</div>
+  <div>🔥 BOBUR SHOP</div>
+  <div>
+    <button onclick="toggleCart()">🛍 (<span id="count">0</span>)</button>
+  </div>
 </header>
 
 <div class="container">
@@ -103,12 +92,17 @@ button {
   <h3>Savat</h3>
   <ul id="list"></ul>
   <p>Jami: $<span id="total">0</span></p>
-  <button onclick="clearCart()">🗑 Tozalash</button>
   <button onclick="pay()">💳 Buyurtma</button>
+</div>
+
+<div class="admin">
+  <h3>📦 Buyurtmalar</h3>
+  <ul id="orders"></ul>
 </div>
 
 <script>
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
 let total = 0;
 
 const TOKEN = "8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw";
@@ -131,13 +125,17 @@ function updateCart(){
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function addToCart(name, price){
-  cart.push({name, price});
-  updateCart();
+function updateOrders(){
+  document.getElementById("orders").innerHTML = "";
+  orders.forEach((o,i)=>{
+    let li = document.createElement("li");
+    li.innerText = o;
+    document.getElementById("orders").appendChild(li);
+  });
 }
 
-function clearCart(){
-  cart = [];
+function addToCart(name, price){
+  cart.push({name, price});
   updateCart();
 }
 
@@ -147,25 +145,30 @@ function toggleCart(){
 }
 
 function pay(){
-  let text = "🛒 YANGI BUYURTMA\n\n";
+  let text = "🛒 BUYURTMA\n\n";
 
   cart.forEach(item=>{
-    text += "📦 " + item.name + " - $" + item.price + "\n";
+    text += item.name + " $" + item.price + "\n";
   });
 
-  text += "\n💰 Jami: $" + total;
+  text += "\nJami $" + total;
+
+  orders.push(text);
+  localStorage.setItem("orders", JSON.stringify(orders));
 
   let url = "https://api.telegram.org/bot8640803179:AAEuO8vWAy9rUa4Setq7pfR4g5diJcUu2Yw/sendMessage?chat_id=6718156254&text=" + encodeURIComponent(text);
 
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      alert("✅ Buyurtma yuborildi!");
-      clearCart();
-    });
+  fetch(url);
+
+  alert("✅ Buyurtma yuborildi");
+
+  cart = [];
+  updateCart();
+  updateOrders();
 }
 
 updateCart();
+updateOrders();
 </script>
 
 </body>
