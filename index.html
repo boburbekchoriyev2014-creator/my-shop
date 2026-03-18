@@ -9,37 +9,50 @@
 body {
   margin:0;
   font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: white;
+  background:#0f172a;
+  color:white;
 }
 
 header {
-  background: linear-gradient(90deg,#111,#1e293b);
-  padding: 20px;
-  text-align: center;
-  font-size: 24px;
+  background:#111;
+  padding:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo {
+  font-size:20px;
+  font-weight:bold;
+}
+
+.cart {
+  background:#22c55e;
+  padding:8px 15px;
+  border-radius:10px;
+  cursor:pointer;
 }
 
 .container {
-  padding: 20px;
+  padding:20px;
 }
 
 .products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-  gap: 20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
 }
 
 .card {
-  background: #1e293b;
-  border-radius: 15px;
-  padding: 15px;
-  text-align: center;
+  background:#1e293b;
+  padding:15px;
+  border-radius:15px;
+  text-align:center;
 }
 
 .card img {
-  width: 100%;
-  border-radius: 10px;
+  width:100%;
+  border-radius:10px;
 }
 
 button {
@@ -50,21 +63,29 @@ button {
   border-radius:10px;
   background:#22c55e;
   color:white;
+  cursor:pointer;
 }
 
-footer {
-  text-align:center;
-  padding:15px;
-  margin-top:30px;
+.cart-box {
+  position:fixed;
+  right:10px;
+  top:70px;
   background:#111;
+  padding:15px;
+  border-radius:10px;
+  width:250px;
+  display:none;
 }
-</style>
 
+</style>
 </head>
 
 <body>
 
-<header>🛒 BOBUR SHOP PRO</header>
+<header>
+  <div class="logo">🛒 BOBUR SHOP</div>
+  <div class="cart" onclick="toggleCart()">🛍 Savat (<span id="count">0</span>)</div>
+</header>
 
 <div class="container">
   <div class="products">
@@ -73,31 +94,56 @@ footer {
       <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9">
       <h3>Telefon</h3>
       <p>$500</p>
-      <button onclick="buy('Telefon')">Sotib olish</button>
+      <button onclick="addToCart('Telefon',500)">Qo‘shish</button>
     </div>
 
     <div class="card">
       <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8">
       <h3>Noutbuk</h3>
       <p>$900</p>
-      <button onclick="buy('Noutbuk')">Sotib olish</button>
+      <button onclick="addToCart('Noutbuk',900)">Qo‘shish</button>
     </div>
 
     <div class="card">
       <img src="https://images.unsplash.com/photo-1518444065439-e933c06ce9cd">
       <h3>Quloqchin</h3>
       <p>$100</p>
-      <button onclick="buy('Quloqchin')">Sotib olish</button>
+      <button onclick="addToCart('Quloqchin',100)">Qo‘shish</button>
     </div>
 
   </div>
 </div>
 
-<footer>© 2026 Bobur Shop</footer>
+<div class="cart-box" id="cartBox">
+  <h3>Savat</h3>
+  <ul id="list"></ul>
+  <p>Jami: $<span id="total">0</span></p>
+  <button onclick="checkout()">Buyurtma berish</button>
+</div>
 
 <script>
-function buy(product){
-  alert(product + " buyurtma qilindi!");
+let cart = [];
+let total = 0;
+
+function addToCart(name, price){
+  cart.push({name, price});
+  total += price;
+
+  document.getElementById("count").innerText = cart.length;
+  document.getElementById("total").innerText = total;
+
+  let li = document.createElement("li");
+  li.innerText = name + " - $" + price;
+  document.getElementById("list").appendChild(li);
+}
+
+function toggleCart(){
+  let box = document.getElementById("cartBox");
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+function checkout(){
+  alert("Buyurtma qabul qilindi ✅");
 }
 </script>
 
